@@ -20,30 +20,41 @@
 
 package com.staxrt.tutorial.controller;
 
+import com.staxrt.tutorial.dto.RoomBokingResponseDTO;
+import com.staxrt.tutorial.dto.customerOrderDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
 import com.staxrt.tutorial.model.User;
+import com.staxrt.tutorial.model.roombookingdetails;
 import com.staxrt.tutorial.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.staxrt.tutorial.service.*;
 /**
  * The type User controller.
  *
  * @author Givantha Kalansuriya
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/palaganihotel")
 public class UserController {
+	
+	
+	  @Autowired
+	  private interservice interservice;
 
   @Autowired
   private UserRepository userRepository;
+  
+
 
   /**
    * Get all users list.
@@ -54,6 +65,9 @@ public class UserController {
   public List<User> getAllUsers() {
     return userRepository.findAll();
   }
+  
+  
+  
 
   /**
    * Gets users by id.
@@ -128,4 +142,29 @@ public class UserController {
     response.put("deleted", Boolean.TRUE);
     return response;
   }
+  
+  /* main code starts here*/
+  
+  
+  @PostMapping("/customercheckin")
+  public ResponseEntity<RoomBokingResponseDTO> createbooking(@Valid @RequestBody customerOrderDTO customerOrderDTO) {
+    
+	  RoomBokingResponseDTO roomBokingResponse =  interservice.createBooking(customerOrderDTO);
+	  
+if(roomBokingResponse.getBookingid() > 0)
+{
+	return new ResponseEntity<>(roomBokingResponse, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(roomBokingResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+	  
+	  
+  }
+
+  
+  
 }
