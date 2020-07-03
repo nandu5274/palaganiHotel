@@ -1,16 +1,20 @@
 package com.staxrt.tutorial.service;
 
+import static com.staxrt.tutorial.constants.RoomBookingConstants.CHECK_IN;
+import static com.staxrt.tutorial.constants.RoomBookingConstants.ERROR;
+import static com.staxrt.tutorial.constants.RoomBookingConstants.FAILED;
+import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_STATUS_NOT_PAID;
+import static com.staxrt.tutorial.constants.RoomBookingConstants.SUCESS;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.net.ssl.SSLEngineResult.Status;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.stereotype.Component;
 
 import com.staxrt.tutorial.dto.CheckinRoomDetailsResponseDTO;
@@ -19,7 +23,6 @@ import com.staxrt.tutorial.dto.RoomDetailsDTO;
 import com.staxrt.tutorial.dto.RoomstatsDTO;
 import com.staxrt.tutorial.dto.customerOrderDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
-import com.staxrt.tutorial.model.User;
 import com.staxrt.tutorial.model.customerdetails;
 import com.staxrt.tutorial.model.roombookingdetails;
 import com.staxrt.tutorial.model.roomdetails;
@@ -28,11 +31,6 @@ import com.staxrt.tutorial.repository.CustomerDetailsRepository;
 import com.staxrt.tutorial.repository.RoomBookingDetailsRepository;
 import com.staxrt.tutorial.repository.RoomDetailsRepository;
 import com.staxrt.tutorial.repository.UserDetailsRepository;
-import static com.staxrt.tutorial.constants.RoomBookingConstants.CHECK_IN;
-import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_STATUS_NOT_PAID;
-import static com.staxrt.tutorial.constants.RoomBookingConstants.SUCESS;
-import static com.staxrt.tutorial.constants.RoomBookingConstants.FAILED;
-import static com.staxrt.tutorial.constants.RoomBookingConstants.ERROR;
 
 
 @Component
