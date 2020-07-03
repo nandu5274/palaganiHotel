@@ -1,5 +1,6 @@
 package com.staxrt.tutorial.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,10 +19,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "roomdetails")
 @EntityListeners(AuditingEntityListener.class)
-public class roomdetails {
+public class roomdetails   implements Serializable  {
 
 	
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2808392199424731898L;
+
+
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
@@ -37,6 +44,8 @@ public class roomdetails {
     @Column(name = "roomstatus")
     private String roomstatus;
     
+    @Column(name = "roomtype")
+    private String roomtype;
 
 
     
@@ -101,24 +110,45 @@ public class roomdetails {
 
 
 
-	public roomdetails(int id, String floorid, String roomnumber, String roomstatus) {
+
+
+	public String getRoomtype() {
+		return roomtype;
+	}
+
+
+
+
+
+	public void setRoomtype(String roomtype) {
+		this.roomtype = roomtype;
+	}
+
+
+
+
+
+	public roomdetails(long id, String floorid, String roomnumber, String roomstatus, String roomtype) {
 		super();
 		this.id = id;
 		this.floorid = floorid;
 		this.roomnumber = roomnumber;
 		this.roomstatus = roomstatus;
+		this.roomtype = roomtype;
 	}
+
+
 
 
 
 	@Override
 	public String toString() {
 		return "roomdetails [id=" + id + ", floorid=" + floorid + ", roomnumber=" + roomnumber + ", roomstatus="
-				+ roomstatus + "]";
+				+ roomstatus + ", roomtype=" + roomtype + "]";
 	}
-    
-    
-    
+
+
+
 	
     
     

@@ -1,5 +1,6 @@
 package com.staxrt.tutorial.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -18,11 +19,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = "customerdetails")
 @EntityListeners(AuditingEntityListener.class)
-public class customerdetails {
+public class customerdetails  implements Serializable  {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4220286381300045074L;
+
+
+
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private int id ;
+	private long id ;
     
 
     
@@ -104,18 +112,22 @@ public class customerdetails {
 
 
 
-	public int getId() {
+
+
+
+
+
+	public long getId() {
 		return id;
 	}
 
 
 
 
-	public void setId(int id) {
+
+	public void setId(long id) {
 		this.id = id;
 	}
-
-
 
 
 

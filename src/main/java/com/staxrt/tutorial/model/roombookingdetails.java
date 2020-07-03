@@ -25,7 +25,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class roombookingdetails implements Serializable {
 	
 	
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4861965655911299299L;
+
+
+
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private long bookingid ;
 	
@@ -59,6 +66,13 @@ public class roombookingdetails implements Serializable {
     @Column(name = "paidamount")
 	private int paidamount ;
 	
+	
+    @Column(name = "noofpersons")
+	private int noofpersons ;
+	
+    @Column(name = "extrabeds")
+	private int extrabeds ;
+    
     @ManyToOne (targetEntity= userdetails.class,cascade=CascadeType.ALL)
     @JoinColumn(name="loginby")
 	private userdetails loginby ;
@@ -166,16 +180,53 @@ public class roombookingdetails implements Serializable {
 	public void setLoginby(userdetails loginby) {
 		this.loginby = loginby;
 	}
+	
+	
+
+	public int getNoofpersons() {
+		return noofpersons;
+	}
+
+	public void setNoofpersons(int noofpersons) {
+		this.noofpersons = noofpersons;
+	}
+
+	public int getExtrabeds() {
+		return extrabeds;
+	}
+
+	public void setExtrabeds(int extrabeds) {
+		this.extrabeds = extrabeds;
+	}
+
+	public roombookingdetails(long bookingid, roomdetails roomid, int costomerid, String roomstatus, Date checkintime,
+			Date checkouttime, String paymentstatus, int requestedamount, int paidamount, int noofpersons,
+			int extrabeds, userdetails loginby) {
+		super();
+		this.bookingid = bookingid;
+		this.roomid = roomid;
+		this.costomerid = costomerid;
+		this.roomstatus = roomstatus;
+		this.checkintime = checkintime;
+		this.checkouttime = checkouttime;
+		this.paymentstatus = paymentstatus;
+		this.requestedamount = requestedamount;
+		this.paidamount = paidamount;
+		this.noofpersons = noofpersons;
+		this.extrabeds = extrabeds;
+		this.loginby = loginby;
+	}
 
 	@Override
 	public String toString() {
 		return "roombookingdetails [bookingid=" + bookingid + ", roomid=" + roomid + ", costomerid=" + costomerid
 				+ ", roomstatus=" + roomstatus + ", checkintime=" + checkintime + ", checkouttime=" + checkouttime
 				+ ", paymentstatus=" + paymentstatus + ", requestedamount=" + requestedamount + ", paidamount="
-				+ paidamount + ", loginby=" + loginby + "]";
+				+ paidamount + ", noofpersons=" + noofpersons + ", extrabeds=" + extrabeds + ", loginby=" + loginby
+				+ "]";
 	}
-	
-	
+
+
 	
 
 }

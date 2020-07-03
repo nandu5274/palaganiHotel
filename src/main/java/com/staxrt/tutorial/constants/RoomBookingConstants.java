@@ -7,6 +7,8 @@ public class RoomBookingConstants {
 	
 	public static final String CHECK_OUT  = "CHECK_OUT";
 	
+	public static final String AVAILABLE  = "AVAILABLE";
+	public static final String CLEAN  = "CLEAN";
 	
 	public static final String PAYMENT_STATUS_NOT_PAID  = "notpaid";
 	

@@ -1,14 +1,22 @@
 package com.staxrt.tutorial.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.net.ssl.SSLEngineResult.Status;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.stereotype.Component;
 
+import com.staxrt.tutorial.dto.CheckinRoomDetailsResponseDTO;
 import com.staxrt.tutorial.dto.RoomBokingResponseDTO;
+import com.staxrt.tutorial.dto.RoomDetailsDTO;
+import com.staxrt.tutorial.dto.RoomstatsDTO;
 import com.staxrt.tutorial.dto.customerOrderDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
 import com.staxrt.tutorial.model.User;
@@ -39,7 +47,8 @@ private RoomBookingDetailsRepository roomBookingDetailsRepository;
 private RoomDetailsRepository roomDetailsRepository;
 @Autowired
 private UserDetailsRepository userDetailsRepository;
-
+@Autowired
+EntityManager em;
 
 	
 
@@ -97,12 +106,15 @@ private UserDetailsRepository userDetailsRepository;
 					
 					// finally save in roombooking table //
 					
-					roombookingdetails.setCostomerid(customerdetailsResponse.getId());
+					roombookingdetails.setCostomerid((int)customerdetailsResponse.getId());
 					roombookingdetails.setCheckintime(date);
 					roombookingdetails.setLoginby(userdetails);
 					roombookingdetails.setRoomstatus(CHECK_IN);
 					roombookingdetails.setRoomid(roomdetails);
 					roombookingdetails.setPaymentstatus(PAYMENT_STATUS_NOT_PAID);
+					roombookingdetails.setNoofpersons(customerOrderDTO.getNoofpersons());
+					roombookingdetails.setExtrabeds(customerOrderDTO.getExtrabeds());
+					roombookingdetails.setPaidamount(customerOrderDTO.getPaidamount());
 					roombookingResponse		= roomBookingDetailsRepository.save(roombookingdetails);
 			System.out.println(roombookingResponse);
 			roomBokingResponse.setBookingid(roombookingResponse.getBookingid());
@@ -128,6 +140,167 @@ private UserDetailsRepository userDetailsRepository;
 		}
 		// TODO Auto-generated method stub
 		return roomBokingResponse;
+	}
+
+
+
+
+	public List<RoomDetailsDTO> getRoomDeatils() {
+	
+		
+		List<roomdetails> roomdetails =  new ArrayList<>();
+		 List<RoomDetailsDTO> roomdetailsDtoList  =  new ArrayList<>(); 
+		roomdetails	= roomDetailsRepository.findAll();
+		
+		for( roomdetails roomdetail : roomdetails)
+		{
+			RoomDetailsDTO	roomdetailsDto = new RoomDetailsDTO();
+			roomdetailsDto.setFloorid(roomdetail.getFloorid());
+			roomdetailsDto.setId(roomdetail.getId());
+			roomdetailsDto.setRoomnumber(roomdetail.getRoomnumber());
+			roomdetailsDto.setRoomstatus(roomdetail.getRoomstatus());
+			roomdetailsDto.setRoomtype(roomdetail.getRoomtype());
+	
+			roomdetailsDtoList.add(roomdetailsDto);
+			
+		}
+		
+		
+		return roomdetailsDtoList;
+		
+		
+		
+	}
+
+
+
+
+	public RoomBokingResponseDTO updateBooking(@Valid customerOrderDTO customerOrderDTO) {
+		RoomBokingResponseDTO roomBokingResponseDTO = new RoomBokingResponseDTO();
+		try{
+			
+		roombookingdetails roombookingdetails = roomBookingDetailsRepository.findById(Long.valueOf(customerOrderDTO.getId()))
+				 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + customerOrderDTO.getRoomid()));
+		
+		
+		
+		
+		customerdetails	customerdetails = 	customerDetailsRepository.findById(Long.valueOf(roombookingdetails.getCostomerid()))
+		 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + customerOrderDTO.getRoomid()));
+		
+		
+		customerdetails.setPhotocopy(customerOrderDTO.getPhotocopy());
+		
+		customerdetails.setAdhacopy(customerOrderDTO.getAdhacopy());
+		
+		customerDetailsRepository.save(customerdetails);
+		roombookingdetails.getRoomid().setRoomstatus(CHECK_IN);
+		roomDetailsRepository.save(roombookingdetails.getRoomid());
+		roomBokingResponseDTO.setBookingid(roombookingdetails.getBookingid());
+		roomBokingResponseDTO.setUsername(customerdetails.getFirstname() + customerdetails.getLastname());
+		roomBokingResponseDTO.setMessage("Booking id updated with latest details");
+		roomBokingResponseDTO.setStatus(SUCESS);
+		}catch(Exception e )
+		{
+			
+			System.out.println(e.getMessage()); 
+			roomBokingResponseDTO.setMessage("ERROR OCCURED . PLEASE TRY AGAIN");
+			roomBokingResponseDTO.setStatus(FAILED);
+			
+		}
+		
+		return roomBokingResponseDTO;
+	}
+
+
+
+
+	public List<CheckinRoomDetailsResponseDTO> getcheckinRooms() {
+	
+		
+		 List<CheckinRoomDetailsResponseDTO> checkinRoomDetailsResponseDTOList = new ArrayList<>();
+	    String nativeQuery = "select r.bookingid ,c.firstname ,c.lastname,room.roomnumber,r.checkintime "
+	    		+ ",r.extrabeds ,r.noofpersons,r.paidamount from b1kr4swwths1vyla9typ.roombookingdetails r"
+	    		+ " join b1kr4swwths1vyla9typ.customerdetails c on c.id = r.costomerid join "
+	    		+ "b1kr4swwths1vyla9typ.roomdetails room on room.id = r.roomid where r.roomstatus = 'CHECK_IN'  "
+	    		+ "ORDER  by  r.bookingid desc";   
+	    Query query = em.createNativeQuery(nativeQuery);
+
+	    List<Object[]> list = query.getResultList();
+long count = 1;
+	    for(Object[] q1 : list){
+
+	    	CheckinRoomDetailsResponseDTO checkinRoomDetailsResponseDTO = new CheckinRoomDetailsResponseDTO();
+	    	
+	    			checkinRoomDetailsResponseDTO.setBookingid(Long.parseLong(q1[0].toString()));
+	    			checkinRoomDetailsResponseDTO.setFirstname(q1[1].toString());
+	    			checkinRoomDetailsResponseDTO.setLastname(q1[2].toString());
+	    			checkinRoomDetailsResponseDTO.setRoomnumber(q1[3].toString());
+	    			checkinRoomDetailsResponseDTO.setCheckintime(q1[4].toString());
+	    			checkinRoomDetailsResponseDTO.setExtrabeds(Long.parseLong(q1[5].toString()));
+	    			checkinRoomDetailsResponseDTO.setNofpersons(Long.parseLong(q1[6].toString()));
+	    			checkinRoomDetailsResponseDTO.setPaidamount(Long.parseLong(q1[7].toString()));
+	    			checkinRoomDetailsResponseDTO.setIndexid(count);
+	    			checkinRoomDetailsResponseDTOList.add(checkinRoomDetailsResponseDTO);
+	    			count++;
+	    			
+	    }
+		
+		
+		
+		return checkinRoomDetailsResponseDTOList;
+	}
+
+
+
+
+	public RoomstatsDTO getroomstats() {
+		
+		
+		RoomstatsDTO roomstatsDTO = new RoomstatsDTO();
+		
+		 String nativeQuery = " select roomstatus , count(*) from b1kr4swwths1vyla9typ.roomdetails r group by  roomstatus ";
+		    	
+		    Query query = em.createNativeQuery(nativeQuery);
+
+		    List<Object[]> list = query.getResultList();
+	
+		    
+		    roomstatsDTO.setAvailablestatus("AVAILABLE");
+		    roomstatsDTO.setAvailablecount("0");
+		    
+		    
+		    roomstatsDTO.setCheckinstatus("CHECK_IN");
+		    roomstatsDTO.setCheckincount("0");
+		
+		    
+		    roomstatsDTO.setCleancount("0");
+		    roomstatsDTO.setCleanstatus("CLEAN");
+		    
+		    for(Object[] q1 : list){
+		    	
+		    	
+		    	if(q1[0].toString().equalsIgnoreCase("AVAILABLE"))
+		    	{
+		    		
+		    		  roomstatsDTO.setAvailablecount(q1[1].toString());
+		    	}
+		    	else if(q1[0].toString().equalsIgnoreCase("CHECK_IN"))
+		    	{
+		    		
+		    		
+		    		  roomstatsDTO.setCheckincount(q1[1].toString());
+		    	}
+		    	else if(q1[0].toString().equalsIgnoreCase("CLEAN"))
+		    	{
+		    		 roomstatsDTO.setCleancount(q1[1].toString());
+		    	}
+		    		
+		    	
+		    }
+		
+		
+		return roomstatsDTO;
 	}
 	
 	

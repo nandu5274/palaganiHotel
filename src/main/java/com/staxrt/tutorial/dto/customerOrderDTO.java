@@ -2,6 +2,8 @@ package com.staxrt.tutorial.dto;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.staxrt.tutorial.model.roombookingdetails;
 
 public class customerOrderDTO {
@@ -53,6 +55,15 @@ public class customerOrderDTO {
 		private long roomid;
 		
 		private String roomstatus;
+		
+	
+			private int paidamount ;
+			
+			
+		   
+			private int noofpersons ;
+	
+			private int extrabeds ;
 		
 		
 		private String loginby;
@@ -277,6 +288,60 @@ public class customerOrderDTO {
 
 		public void setLoginby(String loginby) {
 			this.loginby = loginby;
+		}
+
+
+
+
+
+
+		public int getPaidamount() {
+			return paidamount;
+		}
+
+
+
+
+
+
+		public void setPaidamount(int paidamount) {
+			this.paidamount = paidamount;
+		}
+
+
+
+
+
+
+		public int getNoofpersons() {
+			return noofpersons;
+		}
+
+
+
+
+
+
+		public void setNoofpersons(int noofpersons) {
+			this.noofpersons = noofpersons;
+		}
+
+
+
+
+
+
+		public int getExtrabeds() {
+			return extrabeds;
+		}
+
+
+
+
+
+
+		public void setExtrabeds(int extrabeds) {
+			this.extrabeds = extrabeds;
 		}
 
 

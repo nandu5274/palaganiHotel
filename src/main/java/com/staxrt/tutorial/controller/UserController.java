@@ -20,19 +20,27 @@
 
 package com.staxrt.tutorial.controller;
 
+import com.staxrt.tutorial.dto.CheckinRoomDetailsResponseDTO;
 import com.staxrt.tutorial.dto.RoomBokingResponseDTO;
+import com.staxrt.tutorial.dto.RoomDetailsDTO;
+import com.staxrt.tutorial.dto.RoomstatsDTO;
 import com.staxrt.tutorial.dto.customerOrderDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
 import com.staxrt.tutorial.model.User;
 import com.staxrt.tutorial.model.roombookingdetails;
 import com.staxrt.tutorial.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.net.ssl.SSLEngineResult.Status;
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
+
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +61,9 @@ public class UserController {
 
   @Autowired
   private UserRepository userRepository;
+  
+  @Autowired
+  EntityManager em;
   
 
 
@@ -145,7 +156,7 @@ public class UserController {
   
   /* main code starts here*/
   
-  
+  @CrossOrigin
   @PostMapping("/customercheckin")
   public ResponseEntity<RoomBokingResponseDTO> createbooking(@Valid @RequestBody customerOrderDTO customerOrderDTO) {
     
@@ -164,7 +175,86 @@ else
 	  
 	  
   }
+  
+  
+  @CrossOrigin
+  @PostMapping("/updatecheckinorder")
+  public ResponseEntity<RoomBokingResponseDTO> updateCheckinorder(@Valid @RequestBody customerOrderDTO customerOrderDTO) {
+    
+	  RoomBokingResponseDTO roomBokingResponse =  interservice.updateBooking(customerOrderDTO);
+	  
+if(roomBokingResponse.getStatus().equalsIgnoreCase("SUCCESS"))
+{
+	return new ResponseEntity<>(roomBokingResponse, HttpStatus.OK);
+}
 
+else
+{
+	return new ResponseEntity<>(roomBokingResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+	  
+	  
+  }
+  
+  
+
+  @CrossOrigin
+  @GetMapping("/getRooms")
+  public ResponseEntity<List<RoomDetailsDTO>>getRoomsDetails() {
+    
+	  List<RoomDetailsDTO> roomDetailsDTO =  interservice.getRoomDeatils();
+	  
+	  
+if(!CollectionUtils.isEmpty(roomDetailsDTO))
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	  
+	  
+  }
+  
+  
+  
+  @CrossOrigin
+  @GetMapping("/getcheckinRooms")
+  public ResponseEntity<List<CheckinRoomDetailsResponseDTO>>getcheckinRooms() {
+    
+	  List<CheckinRoomDetailsResponseDTO> roomDetailsDTO =  interservice.getcheckinRooms();
+	  
+	  
+if(!CollectionUtils.isEmpty(roomDetailsDTO))
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	  
+	  
+  }
+  
+  @CrossOrigin
+  @GetMapping("/getroomstats")
+  public ResponseEntity<RoomstatsDTO>getroomstatsCount() {
+    
+	 RoomstatsDTO roomDetailsDTO =  interservice.getroomstats();
+	  
+	  
+
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.OK);
+
+
+	  
+  }
+  
   
   
 }
