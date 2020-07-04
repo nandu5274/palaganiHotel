@@ -6,6 +6,7 @@ import static com.staxrt.tutorial.constants.RoomBookingConstants.FAILED;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_STATUS_NOT_PAID;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.SUCESS;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -238,8 +239,8 @@ long count = 1;
 	    			checkinRoomDetailsResponseDTO.setFirstname(q1[1].toString());
 	    			checkinRoomDetailsResponseDTO.setLastname(q1[2].toString());
 	    			checkinRoomDetailsResponseDTO.setRoomnumber(q1[3].toString());
-	    			formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[4].toString())  ,"dd MMM yyyy hh:mm:ss a","CST");
-	    			checkinRoomDetailsResponseDTO.setCheckintime(q1[4].toString());
+	    			
+	    			checkinRoomDetailsResponseDTO.setCheckintime(formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[4].toString())  ,"dd MMM yyyy hh:mm:ss a","CST"));
 	    			checkinRoomDetailsResponseDTO.setExtrabeds(Long.parseLong(q1[5].toString()));
 	    			checkinRoomDetailsResponseDTO.setNofpersons(Long.parseLong(q1[6].toString()));
 	    			checkinRoomDetailsResponseDTO.setPaidamount(Long.parseLong(q1[7].toString()));
@@ -273,7 +274,11 @@ long count = 1;
 		// set timezone to SimpleDateFormat
 		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 		// return Date in required format with timezone as String
-		return sdf.format(date);
+		//return sdf.format(date);
+		
+		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata")); // Or whatever IST is supposed to be
+		return formatter.format(date);
 	}
 
 
