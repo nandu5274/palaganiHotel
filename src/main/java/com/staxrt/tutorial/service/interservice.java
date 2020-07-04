@@ -238,7 +238,7 @@ long count = 1;
 	    			checkinRoomDetailsResponseDTO.setFirstname(q1[1].toString());
 	    			checkinRoomDetailsResponseDTO.setLastname(q1[2].toString());
 	    			checkinRoomDetailsResponseDTO.setRoomnumber(q1[3].toString());
-	    			formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[4].toString())  ,"dd MMM yyyy hh:mm:ss a","IST");
+	    			formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[4].toString())  ,"dd MMM yyyy hh:mm:ss a","CST");
 	    			checkinRoomDetailsResponseDTO.setCheckintime(q1[4].toString());
 	    			checkinRoomDetailsResponseDTO.setExtrabeds(Long.parseLong(q1[5].toString()));
 	    			checkinRoomDetailsResponseDTO.setNofpersons(Long.parseLong(q1[6].toString()));
@@ -271,7 +271,7 @@ long count = 1;
 			timeZone = Calendar.getInstance().getTimeZone().getID();
 		}
 		// set timezone to SimpleDateFormat
-		sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
+		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 		// return Date in required format with timezone as String
 		return sdf.format(date);
 	}
