@@ -6,9 +6,12 @@ import static com.staxrt.tutorial.constants.RoomBookingConstants.FAILED;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_STATUS_NOT_PAID;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.SUCESS;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -214,9 +217,10 @@ EntityManager em;
 
 
 	public List<CheckinRoomDetailsResponseDTO> getcheckinRooms() {
-	
-		
 		 List<CheckinRoomDetailsResponseDTO> checkinRoomDetailsResponseDTOList = new ArrayList<>();
+	
+		try{
+		
 	    String nativeQuery = "select r.bookingid ,c.firstname ,c.lastname,room.roomnumber,r.checkintime "
 	    		+ ",r.extrabeds ,r.noofpersons,r.paidamount from b1kr4swwths1vyla9typ.roombookingdetails r"
 	    		+ " join b1kr4swwths1vyla9typ.customerdetails c on c.id = r.costomerid join "
@@ -234,6 +238,7 @@ long count = 1;
 	    			checkinRoomDetailsResponseDTO.setFirstname(q1[1].toString());
 	    			checkinRoomDetailsResponseDTO.setLastname(q1[2].toString());
 	    			checkinRoomDetailsResponseDTO.setRoomnumber(q1[3].toString());
+	    			formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[4].toString())  ,"dd MMM yyyy hh:mm:ss a","IST");
 	    			checkinRoomDetailsResponseDTO.setCheckintime(q1[4].toString());
 	    			checkinRoomDetailsResponseDTO.setExtrabeds(Long.parseLong(q1[5].toString()));
 	    			checkinRoomDetailsResponseDTO.setNofpersons(Long.parseLong(q1[6].toString()));
@@ -244,11 +249,32 @@ long count = 1;
 	    			
 	    }
 		
-		
+		}
+		catch(Exception e)
+		{
+			
+			System.out.println(e.getMessage());
+		}
 		
 		return checkinRoomDetailsResponseDTOList;
 	}
 
+	
+	public static String formatDateToString(Date date, String format,
+			String timeZone) {
+		// null check
+		if (date == null) return null;
+		// create SimpleDateFormat object with input format
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		// default system timezone if passed null or empty
+		if (timeZone == null || "".equalsIgnoreCase(timeZone.trim())) {
+			timeZone = Calendar.getInstance().getTimeZone().getID();
+		}
+		// set timezone to SimpleDateFormat
+		sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
+		// return Date in required format with timezone as String
+		return sdf.format(date);
+	}
 
 
 
