@@ -21,6 +21,9 @@
 package com.staxrt.tutorial.controller;
 
 import com.staxrt.tutorial.dto.CheckinRoomDetailsResponseDTO;
+import com.staxrt.tutorial.dto.CheckoutRoomDetailsRequest;
+import com.staxrt.tutorial.dto.CheckoutRoomDetailsResponse;
+import com.staxrt.tutorial.dto.InvoiceDetailsResponseDTO;
 import com.staxrt.tutorial.dto.RoomBokingResponseDTO;
 import com.staxrt.tutorial.dto.RoomDetailsDTO;
 import com.staxrt.tutorial.dto.RoomstatsDTO;
@@ -219,7 +222,8 @@ else
 	  
   }
   
-  
+
+ 
   
   @CrossOrigin
   @GetMapping("/getcheckinRooms")
@@ -254,6 +258,73 @@ else
 
 	  
   }
+  
+  
+  
+  @CrossOrigin
+  @PostMapping("/customercheckout")
+  public ResponseEntity<CheckoutRoomDetailsResponse> customercheckout(@Valid @RequestBody CheckoutRoomDetailsRequest customerOrderDTO) {
+    
+	  CheckoutRoomDetailsResponse checkoutRoomDetailsResponse = 	 interservice.customercheckout(customerOrderDTO);
+	  
+  if(checkoutRoomDetailsResponse.getStatus().equalsIgnoreCase("SUCCESS"))
+{
+	return new ResponseEntity<>(checkoutRoomDetailsResponse, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(checkoutRoomDetailsResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+
+  
+  
+  
+  @CrossOrigin
+  @PostMapping("/invoicedata")
+  public ResponseEntity<InvoiceDetailsResponseDTO> getInvoiceData(@Valid @RequestBody Long bookinid) {
+    
+	  InvoiceDetailsResponseDTO invoiceDetailsResponseDTO= 	 interservice.getInvoiceData(bookinid);
+	  
+  if(invoiceDetailsResponseDTO.getStatus().equalsIgnoreCase("SUCCESS"))
+{
+	return new ResponseEntity<>(invoiceDetailsResponseDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(invoiceDetailsResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+  
+  
+  @CrossOrigin
+  @PostMapping("/makeroomavilable")
+  public ResponseEntity<RoomDetailsDTO> makeroomavilable(@Valid @RequestBody Long roomid) {
+    
+	  RoomDetailsDTO roomDetailsDTO= 	 interservice.makeroomavilable(roomid);
+	  
+  if(roomDetailsDTO.getId()>0)
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+  
   
   
   

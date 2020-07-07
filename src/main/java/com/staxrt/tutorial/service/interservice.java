@@ -1,6 +1,8 @@
 package com.staxrt.tutorial.service;
 
 import static com.staxrt.tutorial.constants.RoomBookingConstants.CHECK_IN;
+import static com.staxrt.tutorial.constants.RoomBookingConstants.AVAILABLE;
+import static com.staxrt.tutorial.constants.RoomBookingConstants.CHECK_OUT;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.ERROR;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.FAILED;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_STATUS_NOT_PAID;
@@ -22,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.staxrt.tutorial.dto.CheckinRoomDetailsResponseDTO;
+import com.staxrt.tutorial.dto.CheckoutRoomDetailsRequest;
+import com.staxrt.tutorial.dto.CheckoutRoomDetailsResponse;
+import com.staxrt.tutorial.dto.InvoiceDetailsResponseDTO;
 import com.staxrt.tutorial.dto.RoomBokingResponseDTO;
 import com.staxrt.tutorial.dto.RoomDetailsDTO;
 import com.staxrt.tutorial.dto.RoomstatsDTO;
@@ -116,7 +121,8 @@ EntityManager em;
 					roombookingdetails.setPaymentstatus(PAYMENT_STATUS_NOT_PAID);
 					roombookingdetails.setNoofpersons(customerOrderDTO.getNoofpersons());
 					roombookingdetails.setExtrabeds(customerOrderDTO.getExtrabeds());
-					roombookingdetails.setPaidamount(customerOrderDTO.getPaidamount());
+					roombookingdetails.setAdvanceamount(customerOrderDTO.getAdvanceamount());
+					roombookingdetails.setAdvanceamounttype(customerOrderDTO.getAdvanceamounttype());
 					roombookingResponse		= roomBookingDetailsRepository.save(roombookingdetails);
 			System.out.println(roombookingResponse);
 			roomBokingResponse.setBookingid(roombookingResponse.getBookingid());
@@ -218,12 +224,13 @@ EntityManager em;
 
 
 	public List<CheckinRoomDetailsResponseDTO> getcheckinRooms() {
-		 List<CheckinRoomDetailsResponseDTO> checkinRoomDetailsResponseDTOList = new ArrayList<>();
+
+		List<CheckinRoomDetailsResponseDTO> checkinRoomDetailsResponseDTOList = new ArrayList<>();
 	
 		try{
 		
 	    String nativeQuery = "select r.bookingid ,c.firstname ,c.lastname,room.roomnumber,r.checkintime "
-	    		+ ",r.extrabeds ,r.noofpersons,r.paidamount from b1kr4swwths1vyla9typ.roombookingdetails r"
+	    		+ ",r.extrabeds ,r.noofpersons,r.advanceamount from b1kr4swwths1vyla9typ.roombookingdetails r"
 	    		+ " join b1kr4swwths1vyla9typ.customerdetails c on c.id = r.costomerid join "
 	    		+ "b1kr4swwths1vyla9typ.roomdetails room on room.id = r.roomid where r.roomstatus = 'CHECK_IN'  "
 	    		+ "ORDER  by  r.bookingid desc";   
@@ -280,7 +287,26 @@ long count = 1;
 		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata")); // Or whatever IST is supposed to be
 		return formatter.format(date);
 	}
-
+	
+	public static String DateformatDateToString(Date date, String format,
+			String timeZone) {
+		// null check
+		if (date == null) return null;
+		// create SimpleDateFormat object with input format
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		// default system timezone if passed null or empty
+		if (timeZone == null || "".equalsIgnoreCase(timeZone.trim())) {
+			timeZone = Calendar.getInstance().getTimeZone().getID();
+		}
+		// set timezone to SimpleDateFormat
+		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+		// return Date in required format with timezone as String
+		//return sdf.format(date);
+		
+		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata")); // Or whatever IST is supposed to be
+		return formatter.format(date);
+	}
 
 
 	public RoomstatsDTO getroomstats() {
@@ -331,6 +357,155 @@ long count = 1;
 		
 		return roomstatsDTO;
 	}
+
+
+
+
+	public CheckoutRoomDetailsResponse customercheckout(@Valid CheckoutRoomDetailsRequest checkoutRoomDTO) {
+	
+		
+		// get roombooking detail domain//
+		Date date = new Date();
+		CheckoutRoomDetailsResponse checkoutRoomDetailsResponse = new CheckoutRoomDetailsResponse();
+		try{
+		roombookingdetails roombookingdetails = new roombookingdetails();
+		roombookingdetails roombookingdetailsresponse = new roombookingdetails();
+		
+		roombookingdetails = roomBookingDetailsRepository.findById(checkoutRoomDTO.getBookingid())
+				 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + checkoutRoomDTO.getBookingid()));
+		
+		roombookingdetails.setRequestedamount(Integer.parseInt(checkoutRoomDTO.getRequestedamount()) + (int) roombookingdetails.getAdvanceamount());
+		roombookingdetails.setCheckouttime(date);
+		roombookingdetails.setPaidamount(Integer.parseInt(checkoutRoomDTO.getPaidamount()));
+		roombookingdetails.setPaidamounttype(checkoutRoomDTO.getPaidamounttype());
+		roombookingdetails.setPaymentstatus(checkoutRoomDTO.getPaymentstatus());
+		roombookingdetails.setRoomstatus(CHECK_OUT);
+		
+		
+		userdetails userdetail =new userdetails();
+		userdetail = userDetailsRepository.findById((long)checkoutRoomDTO.getLoginby())
+				 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + checkoutRoomDTO.getBookingid()));
+		roombookingdetails.setLoginby(userdetail);
+		
+		roomdetails roomdetails = new roomdetails();
+		roomdetails = roombookingdetails.getRoomid();
+		roomdetails.setRoomstatus(checkoutRoomDTO.getRoomstatus());
+		roombookingdetails.setRoomid(roomdetails);
+		
+		roombookingdetailsresponse = roomBookingDetailsRepository.save(roombookingdetails);
+		System.out.println("status = " + roombookingdetailsresponse.toString());
+		
+		checkoutRoomDetailsResponse.setBookingid(roombookingdetailsresponse.getBookingid());
+		checkoutRoomDetailsResponse.setMessage("CHECK-OUT sucessfully");
+		checkoutRoomDetailsResponse.setPaymentstatus(roombookingdetailsresponse.getPaymentstatus());
+		checkoutRoomDetailsResponse.setStatus(SUCESS);
+		
+		
+		}
+		catch(Exception e)
+		{
+			
+
+			checkoutRoomDetailsResponse.setBookingid(checkoutRoomDTO.getBookingid());
+			checkoutRoomDetailsResponse.setMessage("CHECK-OUT failed");
+			checkoutRoomDetailsResponse.setPaymentstatus("not paid");
+			checkoutRoomDetailsResponse.setStatus(FAILED);
+			
+			
+			System.out.println(e.getMessage());
+		}
+		
+		return checkoutRoomDetailsResponse;
+		
+		}
+
+
+
+
+	public InvoiceDetailsResponseDTO getInvoiceData(@Valid Long bookinid) {
+	
+		InvoiceDetailsResponseDTO invoiceDetailsResponseDTO = new InvoiceDetailsResponseDTO();
+		try{
+			Date date = new Date();
+			roombookingdetails roombookingdetails = new roombookingdetails();
+			roombookingdetails = roomBookingDetailsRepository.findById(bookinid)
+					 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + bookinid));
+			
+			
+			customerdetails  customerdetails = new customerdetails();
+			customerdetails = customerDetailsRepository.findById((long)roombookingdetails.getCostomerid())
+					 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + bookinid));
+			
+			
+			invoiceDetailsResponseDTO.setAdress(customerdetails.getAddress()+"," + customerdetails.getCity()+","
+													+customerdetails.getPostalcode()+ "," + customerdetails.getCountry());
+			
+			invoiceDetailsResponseDTO.setCheckin(formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(roombookingdetails.getCheckintime().toString())  ,"dd-MMM-yyyy hh:mm:ss a","CST"));
+			
+			invoiceDetailsResponseDTO.setCheckout(formatDateToString(date ,"dd-MMM-yyyy hh:mm:ss a","CST"));
+			
+			invoiceDetailsResponseDTO.setContactemailid(customerdetails.getEmailid());
+			invoiceDetailsResponseDTO.setContactphone(customerdetails.getMobilenumber());
+			invoiceDetailsResponseDTO.setBillno(String.valueOf(roombookingdetails.getBookingid()));
+			invoiceDetailsResponseDTO.setRoomno(roombookingdetails.getRoomid().getRoomnumber());
+			invoiceDetailsResponseDTO.setStatus(SUCESS);
+			invoiceDetailsResponseDTO.setCustomername(customerdetails.getFirstname() + " " +customerdetails.getLastname() );
+			invoiceDetailsResponseDTO.setDate(DateformatDateToString(date  ,"dd-MMM-yyyy","CST"));
+			
+			
+			
+			
+		}catch(Exception e)
+		{
+			
+			invoiceDetailsResponseDTO.setStatus(FAILED);
+			System.out.println(e.getMessage());
+		}
+		
+		
+		
+		
+		return invoiceDetailsResponseDTO;
+		
+		
+	}
+
+
+
+
+	public RoomDetailsDTO makeroomavilable(@Valid Long roomid) {
+		
+		RoomDetailsDTO RoomDetailsDTO = new RoomDetailsDTO();
+		try{
+			
+			roomdetails roomdetails =  new roomdetails();
+			roomdetails roomdetailsreponse =  new roomdetails();
+			
+			roomdetails	= roomDetailsRepository.findById(roomid).
+					orElseThrow(() -> new ResourceNotFoundException("room not found on :: " + roomid));
+			
+			roomdetails.setRoomstatus(AVAILABLE);
+			roomdetailsreponse = 	roomDetailsRepository.save(roomdetails);
+			
+			RoomDetailsDTO.setFloorid(roomdetailsreponse.getFloorid());
+			RoomDetailsDTO.setId(roomdetailsreponse.getId());
+			RoomDetailsDTO.setRoomnumber(roomdetailsreponse.getRoomnumber());
+			RoomDetailsDTO.setRoomstatus(roomdetailsreponse.getRoomstatus());
+			RoomDetailsDTO.setRoomtype(roomdetailsreponse.getRoomtype());
+			
+		}
+		catch(Exception e)
+		{
+			RoomDetailsDTO.setId(0L);
+			System.out.println(e.getMessage());
+		}
+		
+		
+		return RoomDetailsDTO;
+	}
+
+
+
 	
 	
 	

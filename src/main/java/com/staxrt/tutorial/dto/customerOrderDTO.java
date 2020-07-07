@@ -57,16 +57,27 @@ public class customerOrderDTO {
 		private String roomstatus;
 		
 	
-			private int paidamount ;
+		private int paidamount ;
 			
 			
 		   
-			private int noofpersons ;
+		private int noofpersons ;
 	
-			private int extrabeds ;
+		private int extrabeds ;
 		
 		
 		private String loginby;
+		
+		
+	    
+	    private long advanceamount;
+	    
+	
+	    private String advanceamounttype;
+	    
+	
+	    private String paidamounttype;
+		
 
 		public customerOrderDTO() {
 			super();
@@ -342,6 +353,60 @@ public class customerOrderDTO {
 
 		public void setExtrabeds(int extrabeds) {
 			this.extrabeds = extrabeds;
+		}
+
+
+
+
+
+
+		public long getAdvanceamount() {
+			return advanceamount;
+		}
+
+
+
+
+
+
+		public void setAdvanceamount(long advanceamount) {
+			this.advanceamount = advanceamount;
+		}
+
+
+
+
+
+
+		public String getAdvanceamounttype() {
+			return advanceamounttype;
+		}
+
+
+
+
+
+
+		public void setAdvanceamounttype(String advanceamounttype) {
+			this.advanceamounttype = advanceamounttype;
+		}
+
+
+
+
+
+
+		public String getPaidamounttype() {
+			return paidamounttype;
+		}
+
+
+
+
+
+
+		public void setPaidamounttype(String paidamounttype) {
+			this.paidamounttype = paidamounttype;
 		}
 
 

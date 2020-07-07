@@ -73,6 +73,15 @@ public class roombookingdetails implements Serializable {
     @Column(name = "extrabeds")
 	private int extrabeds ;
     
+    @Column(name = "advanceamount") 
+    private long advanceamount;
+    
+    @Column(name = "advanceamounttype")
+    private String advanceamounttype;
+    
+    @Column(name = "paidamounttype")
+    private String paidamounttype;
+    
     @ManyToOne (targetEntity= userdetails.class,cascade=CascadeType.ALL)
     @JoinColumn(name="loginby")
 	private userdetails loginby ;
@@ -197,6 +206,34 @@ public class roombookingdetails implements Serializable {
 
 	public void setExtrabeds(int extrabeds) {
 		this.extrabeds = extrabeds;
+	}
+	
+	
+
+	
+
+	public long getAdvanceamount() {
+		return advanceamount;
+	}
+
+	public void setAdvanceamount(long advanceamount) {
+		this.advanceamount = advanceamount;
+	}
+
+	public String getAdvanceamounttype() {
+		return advanceamounttype;
+	}
+
+	public void setAdvanceamounttype(String advanceamounttype) {
+		this.advanceamounttype = advanceamounttype;
+	}
+
+	public String getPaidamounttype() {
+		return paidamounttype;
+	}
+
+	public void setPaidamounttype(String paidamounttype) {
+		this.paidamounttype = paidamounttype;
 	}
 
 	public roombookingdetails(long bookingid, roomdetails roomid, int costomerid, String roomstatus, Date checkintime,
