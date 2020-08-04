@@ -17,6 +17,8 @@ public class CheckoutRoomDetailsRequest {
 
 	private String advanceamount;
 	
+	private boolean paymentholdpayfalg;
+	
 	private int loginby;
 	
 	
@@ -97,6 +99,14 @@ public class CheckoutRoomDetailsRequest {
 
 	public void setLoginby(int loginby) {
 		this.loginby = loginby;
+	}
+
+	public boolean isPaymentholdpayfalg() {
+		return paymentholdpayfalg;
+	}
+
+	public void setPaymentholdpayfalg(boolean paymentholdpayfalg) {
+		this.paymentholdpayfalg = paymentholdpayfalg;
 	}
 	
 	

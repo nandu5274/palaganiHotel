@@ -24,9 +24,12 @@ import com.staxrt.tutorial.dto.CheckinRoomDetailsResponseDTO;
 import com.staxrt.tutorial.dto.CheckoutRoomDetailsRequest;
 import com.staxrt.tutorial.dto.CheckoutRoomDetailsResponse;
 import com.staxrt.tutorial.dto.InvoiceDetailsResponseDTO;
+import com.staxrt.tutorial.dto.PaymentHoldRoomDetailsResponseDTO;
 import com.staxrt.tutorial.dto.RoomBokingResponseDTO;
 import com.staxrt.tutorial.dto.RoomDetailsDTO;
 import com.staxrt.tutorial.dto.RoomstatsDTO;
+import com.staxrt.tutorial.dto.budegetDEatilsResponse;
+import com.staxrt.tutorial.dto.budgetdetailsDTO;
 import com.staxrt.tutorial.dto.customerOrderDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
 import com.staxrt.tutorial.model.User;
@@ -245,6 +248,31 @@ else
 	  
   }
   
+  
+  
+  
+  
+  
+  @CrossOrigin
+  @GetMapping("/getpaymentpendningRooms")
+  public ResponseEntity<List<PaymentHoldRoomDetailsResponseDTO>>getpaymentpendningRooms() {
+    
+	  List<PaymentHoldRoomDetailsResponseDTO> roomDetailsDTO =  interservice.getpaymentHoldRooms();
+	  
+	  
+if(!CollectionUtils.isEmpty(roomDetailsDTO))
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	  
+	  
+  }
+  
   @CrossOrigin
   @GetMapping("/getroomstats")
   public ResponseEntity<RoomstatsDTO>getroomstatsCount() {
@@ -264,8 +292,39 @@ else
   @CrossOrigin
   @PostMapping("/customercheckout")
   public ResponseEntity<CheckoutRoomDetailsResponse> customercheckout(@Valid @RequestBody CheckoutRoomDetailsRequest customerOrderDTO) {
+	  CheckoutRoomDetailsResponse checkoutRoomDetailsResponse = new CheckoutRoomDetailsResponse();
+	  if(!customerOrderDTO.isPaymentholdpayfalg())
+    {
+	   checkoutRoomDetailsResponse = 	 interservice.customercheckout(customerOrderDTO);
+	  
+    }
+    else
+    {
+    	  checkoutRoomDetailsResponse = 	 interservice.customercheckoutPaymenthold(customerOrderDTO);
+    }
+  if(checkoutRoomDetailsResponse.getStatus().equalsIgnoreCase("SUCCESS"))
+{
+	return new ResponseEntity<>(checkoutRoomDetailsResponse, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(checkoutRoomDetailsResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+
+  
+  
+  
+  
+  @CrossOrigin
+  @PostMapping("/customercheckoutpaymenthold")
+  public ResponseEntity<CheckoutRoomDetailsResponse> customercheckoutpaymenthold(@Valid @RequestBody CheckoutRoomDetailsRequest customerOrderDTO) {
     
-	  CheckoutRoomDetailsResponse checkoutRoomDetailsResponse = 	 interservice.customercheckout(customerOrderDTO);
+	  CheckoutRoomDetailsResponse checkoutRoomDetailsResponse = 	 interservice.customercheckoutpaymenthold(customerOrderDTO);
 	  
   if(checkoutRoomDetailsResponse.getStatus().equalsIgnoreCase("SUCCESS"))
 {
@@ -281,6 +340,9 @@ else
 	  
   }
 
+  
+  
+  
   
   
   
@@ -307,7 +369,7 @@ else
   
   @CrossOrigin
   @PostMapping("/makeroomavilable")
-  public ResponseEntity<RoomDetailsDTO> makeroomavilable(@Valid @RequestBody Long roomid) {
+  public ResponseEntity<RoomDetailsDTO> maker2oomavilable(@Valid @RequestBody Long roomid) {
     
 	  RoomDetailsDTO roomDetailsDTO= 	 interservice.makeroomavilable(roomid);
 	  
@@ -319,6 +381,28 @@ else
 else
 {
 	return new ResponseEntity<>(roomDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+  
+  
+  
+  @CrossOrigin
+  @GetMapping("/getcurentmnthbudeget")
+  public ResponseEntity<budegetDEatilsResponse> getcurentmnthbudeget() {
+    
+	  budegetDEatilsResponse budgetdetailsDTO= 	 interservice.getcurentmnthbudeget();
+	  
+  if(budgetdetailsDTO != null)
+{
+	return new ResponseEntity<>(budgetdetailsDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(budgetdetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
 }
 	 
 		
