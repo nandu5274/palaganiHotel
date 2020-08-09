@@ -1,91 +1,54 @@
-package com.staxrt.tutorial.model;
+package com.staxrt.tutorial.dto;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-@Entity
-@Table(name = "advancebookingdetails")
-@EntityListeners(AuditingEntityListener.class)
-public class AdvanceBookingDetails {
-
+public class getAdvanceBookingDetailDTO {
 	
 	
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -4220286381300045074L;
-
-
-
-	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
 	private long id ;
     
 
-    
-    @Column(name = "customername")
+
 	private String	customerName ;
-    
-    @Column(name = "checkindate")
-	private Date checkinDate; 
+  
+	private String checkinDate; 
         
-    @Column(name = "advanceamount")
+
 	private Long advanceAmount ;
     
     
-    @Column(name = "remainingamount")
+
 	private Long remainingAmount ;
     
-    @Column(name = "returnedamount")
+ 
 	private Long returnedAmount ;
     
     
-    @Column(name = "numberofrooms")
+   
 	private Long numberOfRooms ;
     
-    @Column(name = "numberofpersons")
+
   	private Long numberOfPersons ;
     
-    @Column(name = "createddate")
-	private Date createdDate; 
+
+	private String createdDate; 
     
     
-    @Column(name = "bookingids")
+ 
    	private String bookingIds; 
+
+ 	private String updatedDate; 
     
-    @Column(name = "updateddate")
- 	private Date updatedDate; 
     
-    
-    @Column(name = "status")
+
    	private String status;
     
-    @Column(name = "mobilenumber")
+  
     private String mobileNumber;
     
-    
-    @Column(name = "purposeofvist")
+ 
     private String purposeofvist;
-
-
-
-    
-    
-    
-    
-	public AdvanceBookingDetails() {
-		super();
-	}
 
 
 	public long getId() {
@@ -105,16 +68,6 @@ public class AdvanceBookingDetails {
 
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
-	}
-
-
-	public Date getCheckinDate() {
-		return checkinDate;
-	}
-
-
-	public void setCheckinDate(Date checkinDate) {
-		this.checkinDate = checkinDate;
 	}
 
 
@@ -168,12 +121,12 @@ public class AdvanceBookingDetails {
 	}
 
 
-	public Date getCreatedDate() {
+	public String getCreatedDate() {
 		return createdDate;
 	}
 
 
-	public void setCreatedDate(Date createdDate) {
+	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
 	}
 
@@ -188,12 +141,12 @@ public class AdvanceBookingDetails {
 	}
 
 
-	public Date getUpdatedDate() {
+	public String getUpdatedDate() {
 		return updatedDate;
 	}
 
 
-	public void setUpdatedDate(Date updatedDate) {
+	public void setUpdatedDate(String updatedDate) {
 		this.updatedDate = updatedDate;
 	}
 
@@ -205,11 +158,6 @@ public class AdvanceBookingDetails {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 
@@ -230,9 +178,24 @@ public class AdvanceBookingDetails {
 
 	public void setPurposeofvist(String purposeofvist) {
 		this.purposeofvist = purposeofvist;
-	}    
-    
-    
-    
+	}
+
+
+	public getAdvanceBookingDetailDTO() {
+		super();
+	}
+
+
+	public String getCheckinDate() {
+		return checkinDate;
+	}
+
+
+	public void setCheckinDate(String checkinDate) {
+		this.checkinDate = checkinDate;
+	}
+
+
+
 
 }

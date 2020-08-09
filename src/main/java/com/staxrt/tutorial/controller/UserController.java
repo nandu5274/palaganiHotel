@@ -30,7 +30,10 @@ import com.staxrt.tutorial.dto.RoomDetailsDTO;
 import com.staxrt.tutorial.dto.RoomstatsDTO;
 import com.staxrt.tutorial.dto.budegetDEatilsResponse;
 import com.staxrt.tutorial.dto.budgetdetailsDTO;
+import com.staxrt.tutorial.dto.creatAdvanceBookingRequestDTO;
+import com.staxrt.tutorial.dto.creatAdvanceBookingResponseDTO;
 import com.staxrt.tutorial.dto.customerOrderDTO;
+import com.staxrt.tutorial.dto.getAdvanceBookingDetailDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
 import com.staxrt.tutorial.model.User;
 import com.staxrt.tutorial.model.roombookingdetails;
@@ -409,6 +412,93 @@ else
 	  
   }
   
+  
+  
+  
+  @CrossOrigin
+  @PostMapping("/createadvancebooking")
+  public ResponseEntity<creatAdvanceBookingResponseDTO> createAdvanceBooking(@Valid @RequestBody creatAdvanceBookingRequestDTO creatAdvanceBookingRequestDTO) {
+    
+	  creatAdvanceBookingResponseDTO creatAdvanceBookingResponseDTO = 	 interservice.createAdavnceBooking(creatAdvanceBookingRequestDTO);
+	  
+  if(creatAdvanceBookingResponseDTO.getStatus().equalsIgnoreCase("SUCCESS"))
+{
+	return new ResponseEntity<>(creatAdvanceBookingResponseDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(creatAdvanceBookingResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+
+  
+  
+  
+  
+  @CrossOrigin
+  @GetMapping("/getpendingadvancebokingdetails")
+  public ResponseEntity<List<getAdvanceBookingDetailDTO>> getpendingadvancebokingdetails() {
+    
+	  List<getAdvanceBookingDetailDTO> getAdvanceBookingDetailDTO = 	 interservice.getAdvanceBookingDetails();
+	  
+  if(getAdvanceBookingDetailDTO.size()>0)
+{
+	return new ResponseEntity<>(getAdvanceBookingDetailDTO, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(getAdvanceBookingDetailDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+  
+  
+  @CrossOrigin
+  @PostMapping("/editeadvancebooking")
+  public ResponseEntity<getAdvanceBookingDetailDTO> editAdvanceBooking(@Valid @RequestBody getAdvanceBookingDetailDTO getAdvanceBookingDetailDTO) {
+    
+	  getAdvanceBookingDetailDTO editAdvanceBookingDetailResponse = 	 interservice.editAdavnceBooking(getAdvanceBookingDetailDTO);
+	  
+  if(editAdvanceBookingDetailResponse!=null)
+{
+	return new ResponseEntity<>(editAdvanceBookingDetailResponse, HttpStatus.OK);
+}
+
+else
+{
+	return new ResponseEntity<>(editAdvanceBookingDetailResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+	 
+		
+	  
+  }
+
+  @CrossOrigin
+  @PostMapping("/getpendingadvancebookingdetails")
+  public ResponseEntity<getAdvanceBookingDetailDTO> getPendingAdvanceBookingDetails() {
+    
+	 // getAdvanceBookingDetailDTO editAdvanceBookingDetailResponse = 	 interservice.getPendingAdvanceBookingDetails();
+	  
+  //if(editAdvanceBookingDetailResponse!=null)
+//{
+//	return new ResponseEntity<>(editAdvanceBookingDetailResponse, HttpStatus.OK);
+//}
+
+//else
+//{
+//	return new ResponseEntity<>(editAdvanceBookingDetailResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+//}
+	 return null;
+		
+	  
+  }
   
   
   

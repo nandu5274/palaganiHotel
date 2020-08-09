@@ -9,6 +9,7 @@ import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_STATUS_
 import static com.staxrt.tutorial.constants.RoomBookingConstants.SUCESS;
 import static com.staxrt.tutorial.constants.RoomBookingConstants.PAYMENT_HOLD;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -17,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -35,17 +37,22 @@ import com.staxrt.tutorial.dto.RoomDetailsDTO;
 import com.staxrt.tutorial.dto.RoomstatsDTO;
 import com.staxrt.tutorial.dto.budegetDEatilsResponse;
 import com.staxrt.tutorial.dto.budgetdetailsDTO;
+import com.staxrt.tutorial.dto.creatAdvanceBookingRequestDTO;
+import com.staxrt.tutorial.dto.creatAdvanceBookingResponseDTO;
 import com.staxrt.tutorial.dto.customerOrderDTO;
+import com.staxrt.tutorial.dto.getAdvanceBookingDetailDTO;
 import com.staxrt.tutorial.exception.ResourceNotFoundException;
+import com.staxrt.tutorial.model.AdvanceBookingDetails;
 import com.staxrt.tutorial.model.customerdetails;
 import com.staxrt.tutorial.model.roombookingdetails;
 import com.staxrt.tutorial.model.roomdetails;
 import com.staxrt.tutorial.model.userdetails;
+import com.staxrt.tutorial.repository.AdvanceBokkingDeatilsRepository;
 import com.staxrt.tutorial.repository.CustomerDetailsRepository;
 import com.staxrt.tutorial.repository.RoomBookingDetailsRepository;
 import com.staxrt.tutorial.repository.RoomDetailsRepository;
 import com.staxrt.tutorial.repository.UserDetailsRepository;
-
+import static com.staxrt.tutorial.constants.RoomBookingConstants.PENDING;
 
 @Component
 public class interservice {
@@ -59,6 +66,11 @@ private RoomBookingDetailsRepository roomBookingDetailsRepository;
 private RoomDetailsRepository roomDetailsRepository;
 @Autowired
 private UserDetailsRepository userDetailsRepository;
+
+@Autowired
+private AdvanceBokkingDeatilsRepository advanceBokkingDeatilsRepository;
+
+
 @Autowired
 EntityManager em;
 
@@ -739,7 +751,7 @@ public CheckoutRoomDetailsResponse customercheckoutPaymenthold(@Valid CheckoutRo
 		 		+ " DATE(checkintime) = LAST_DAY(CURRENT_DATE() + INTERVAL 1 MONTH) OR"
 		 		+ " MONTH(checkouttime ) = MONTH(CURRENT_DATE()) OR "
 		 		+ "DATE(checkouttime) = LAST_DAY(CURRENT_DATE() - INTERVAL 1 MONTH) OR "
-		 		+ "DATE(checkouttime) = LAST_DAY(CURRENT_DATE() + INTERVAL 1 MONTH)";   
+		 		+ "DATE(checkouttime) = LAST_DAY(CURRENT_DATE() + INTERVAL 1 MONTH)    order by r.checkintime asc";   
 		    Query query = em.createNativeQuery(nativeQuery);
 
 		    List<Object[]> list = query.getResultList();
@@ -823,6 +835,181 @@ public CheckoutRoomDetailsResponse customercheckoutPaymenthold(@Valid CheckoutRo
 			
 		}
 		return budegetDEatilsResponse;
+	}
+
+
+
+
+	public creatAdvanceBookingResponseDTO createAdavnceBooking(
+			@Valid creatAdvanceBookingRequestDTO creatAdvanceBookingRequestDTO) {
+		Date date = new Date();
+		creatAdvanceBookingResponseDTO creatAdvanceBookingResponse = new creatAdvanceBookingResponseDTO();
+		
+		try{
+			AdvanceBookingDetails advanceBookingDetailsResponse = new AdvanceBookingDetails();
+			AdvanceBookingDetails advanceBookingDetails = new AdvanceBookingDetails();
+			advanceBookingDetails.setCustomerName(creatAdvanceBookingRequestDTO.getAdvancecustomername());	
+			advanceBookingDetails.setCheckinDate(getAdvanceBookingcheckindate(creatAdvanceBookingRequestDTO.getAdvancecheckindate()));
+			advanceBookingDetails.setCreatedDate(date);
+			advanceBookingDetails.setNumberOfPersons(creatAdvanceBookingRequestDTO.getAdvancenoofperosons());
+			advanceBookingDetails.setNumberOfRooms(creatAdvanceBookingRequestDTO.getAdvancenoofrooms());
+			advanceBookingDetails.setStatus(PENDING);
+			advanceBookingDetails.setAdvanceAmount(creatAdvanceBookingRequestDTO.getAdvanceadavanceamout());
+			advanceBookingDetails.setRemainingAmount(creatAdvanceBookingRequestDTO.getAdvanceadavanceamout());
+			advanceBookingDetails.setReturnedAmount(0L);
+			advanceBookingDetails.setMobileNumber(creatAdvanceBookingRequestDTO.getAdvancemobilenumber());
+			advanceBookingDetails.setUpdatedDate(date);
+			advanceBookingDetails.setPurposeofvist(creatAdvanceBookingRequestDTO.getAdvancepurposeofvist());
+			advanceBookingDetailsResponse = 	advanceBokkingDeatilsRepository.save(advanceBookingDetails);
+			if(advanceBookingDetailsResponse !=null)
+			{
+				creatAdvanceBookingResponse.setMessage("SUCCESS");
+				creatAdvanceBookingResponse.setStatus("SUCCESS");
+				
+			}
+			else
+			{
+				creatAdvanceBookingResponse.setMessage("FAILED");
+				creatAdvanceBookingResponse.setStatus("FAILED");
+			}
+		}
+		catch(Exception e)
+		{
+			
+			creatAdvanceBookingResponse.setMessage("FAILED");
+			creatAdvanceBookingResponse.setStatus("FAILED");
+			
+		}
+		
+		
+		
+		
+		return creatAdvanceBookingResponse;
+	}
+
+
+
+
+	private Date getAdvanceBookingcheckindate(String advancecheckindate) {
+		Date date1 = null;
+		try {
+			date1 = new SimpleDateFormat("yyyy-MM-dd").parse(advancecheckindate);
+			 date1.setTime(date1.getTime() + TimeUnit.HOURS.toMillis(7));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		return date1;
+	}
+
+
+
+
+	public List<getAdvanceBookingDetailDTO> getAdvanceBookingDetails() {
+	
+		List<getAdvanceBookingDetailDTO> getAdvanceBookingDetailList = new ArrayList<>();
+		
+		try{
+			
+			
+			
+			
+			
+			 String nativeQuery = "select * from advancebookingdetails where status in ('PENDING','CHECK_IN')";   
+			    Query query = em.createNativeQuery(nativeQuery);
+
+			    List<Object[]> list = query.getResultList();
+			    
+			    for(Object[] q1 : list){
+		
+			    	getAdvanceBookingDetailDTO getAdvanceBookingDetailDTO = new getAdvanceBookingDetailDTO();
+			    	
+			    	getAdvanceBookingDetailDTO.setId(Long.parseLong(q1[0].toString()));
+			    	getAdvanceBookingDetailDTO.setAdvanceAmount(Long.parseLong(q1[1].toString()));
+			    	if(q1[2] != null)
+			    	getAdvanceBookingDetailDTO.setBookingIds(q1[2].toString());
+			    	else
+			    	getAdvanceBookingDetailDTO.setBookingIds("");	
+			    	getAdvanceBookingDetailDTO.setCheckinDate(DateformatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[3].toString())  ,"dd MMM yyyy hh:mm:ss a","CST"));
+			    	getAdvanceBookingDetailDTO.setCreatedDate(formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[4].toString())  ,"dd MMM yyyy hh:mm:ss a","CST"));
+			    	getAdvanceBookingDetailDTO.setCustomerName(q1[5].toString());
+			    	getAdvanceBookingDetailDTO.setNumberOfPersons(Long.parseLong(q1[6].toString()));
+			    	getAdvanceBookingDetailDTO.setNumberOfRooms(Long.parseLong(q1[7].toString()));
+			    	getAdvanceBookingDetailDTO.setRemainingAmount(Long.parseLong(q1[8].toString()));
+			    	getAdvanceBookingDetailDTO.setReturnedAmount(Long.parseLong(q1[9].toString()));
+			    	getAdvanceBookingDetailDTO.setStatus(q1[10].toString());
+			    	getAdvanceBookingDetailDTO.setUpdatedDate(formatDateToString(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S").parse(q1[11].toString())  ,"dd MMM yyyy hh:mm:ss a","CST"));
+			    	getAdvanceBookingDetailDTO.setMobileNumber(q1[12].toString());
+			    	getAdvanceBookingDetailDTO.setPurposeofvist(q1[13].toString());
+			    	
+			    	getAdvanceBookingDetailList.add(getAdvanceBookingDetailDTO);
+			    }
+			
+			
+			
+		}catch(Exception e )
+		{
+			
+			System.out.println(e.getLocalizedMessage());
+			
+		}
+		
+		
+		
+		
+		
+		return getAdvanceBookingDetailList;
+	}
+
+
+
+
+	public getAdvanceBookingDetailDTO editAdavnceBooking(
+			@Valid getAdvanceBookingDetailDTO getAdvanceBookingDetailDTO) {
+	
+		
+		getAdvanceBookingDetailDTO editAdvanceBookingDetailDTOResponse = new getAdvanceBookingDetailDTO();
+		
+		try{
+			Date date = new Date();
+			AdvanceBookingDetails advanceBookingDetails  = new AdvanceBookingDetails();
+			AdvanceBookingDetails advanceBookingDetailsResponse  = new AdvanceBookingDetails();
+			
+			advanceBookingDetails = advanceBokkingDeatilsRepository.findById(getAdvanceBookingDetailDTO.getId())
+					 .orElseThrow(() -> new ResourceNotFoundException("User not found on :: " + getAdvanceBookingDetailDTO.getId()));
+			
+			
+			advanceBookingDetails.setBookingIds(getAdvanceBookingDetailDTO.getBookingIds());
+			advanceBookingDetails.setMobileNumber(getAdvanceBookingDetailDTO.getMobileNumber());
+			advanceBookingDetails.setNumberOfPersons(getAdvanceBookingDetailDTO.getNumberOfPersons());
+			advanceBookingDetails.setNumberOfRooms(getAdvanceBookingDetailDTO.getNumberOfRooms());
+			advanceBookingDetails.setPurposeofvist(getAdvanceBookingDetailDTO.getPurposeofvist());
+			advanceBookingDetails.setRemainingAmount(getAdvanceBookingDetailDTO.getRemainingAmount());
+			advanceBookingDetails.setStatus(getAdvanceBookingDetailDTO.getStatus());
+			advanceBookingDetails.setReturnedAmount(getAdvanceBookingDetailDTO.getReturnedAmount());
+			advanceBookingDetails.setUpdatedDate(date);
+			
+			advanceBookingDetailsResponse = advanceBokkingDeatilsRepository.save(advanceBookingDetails);
+			if(advanceBookingDetailsResponse != null)
+			{
+				editAdvanceBookingDetailDTOResponse = getAdvanceBookingDetailDTO;
+			}
+			else
+			{
+				editAdvanceBookingDetailDTOResponse = null;
+			}
+			
+		}
+		catch(Exception e)
+		{
+			
+			System.out.println(e.getLocalizedMessage());
+			
+		}
+		
+		
+		
+		return editAdvanceBookingDetailDTOResponse;
 	}
 
 
